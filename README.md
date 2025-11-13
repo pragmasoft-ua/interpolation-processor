@@ -6,14 +6,11 @@
 [![Build Status](https://travis-ci.org/toolisticon/${rootArtifactId}.svg?branch=master)](https://travis-ci.org/toolisticon/${rootArtifactId})
 [![codecov](https://codecov.io/gh/toolisticon/${rootArtifactId}/branch/master/graph/badge.svg)](https://codecov.io/gh/toolisticon/${rootArtifactId})
 
-
 Maven archetype used to generate the project:
 
 `mvn archetype:generate -DarchetypeGroupId="io.toolisticon.maven.archetypes" -DarchetypeArtifactId="annotationprocessor-archetype" -DarchetypeVersion="0.10.0" -DgroupId=pragmasoft -DartifactId=interpolation-processor -Dversion="2025.11.1" -Dpackage=interpolation -DannotationName=InterpolationMethod`
 
-
 # Why you should use this project?
-
 
 # Features
 
@@ -23,7 +20,7 @@ Annotation processor that (partially) implements JEP 465 style string interpolat
 
 Just add the interpolation-processor annotation processor dependency to your dependencies
 
-```xml`
+``` xml`
 <dependencies>
     <!-- must be on provided scope since it is just needed at compile time -->
     <dependency>
@@ -33,13 +30,12 @@ Just add the interpolation-processor annotation processor dependency to your dep
         <scope>provided</scope>
     </dependency>
 </dependencies>
-``
-
+ ``
 
 ## Preconditions
 
 ## Example
-    
+
 # Contributing
 
 We welcome any kind of suggestions and pull requests.
@@ -59,9 +55,8 @@ The likelihood of a pull request being used rises with the following properties:
 
 ## Contributions
 
-
 # License
 
-This project is released under the [GPL V2.0 License](LICENSE).
+This project is released under the [GPL V3.0 License](LICENSE).
 
-This project includes and repackages the [Annotation-Processor-Toolkit](https://github.com/holisticon/annotation-processor-toolkit) released under the  [MIT License](/3rdPartyLicenses/annotation-processor-toolkit/LICENSE.txt).
+This project includes and repackages the [Annotation-Processor-Toolkit](https://github.com/holisticon/annotation-processor-toolkit) released under the [MIT License](/3rdPartyLicenses/annotation-processor-toolkit/LICENSE.txt).
