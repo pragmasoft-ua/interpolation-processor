@@ -50,7 +50,7 @@
             <annotationProcessorPaths>
               <path>
                 <groupId>pragmasoft</groupId>
-                <artifactId>interpolation-processor-processor</artifactId>
+                <artifactId>interpolation-processor</artifactId>
                 <version>${project.version}</version>
               </path>
             </annotationProcessorPaths>

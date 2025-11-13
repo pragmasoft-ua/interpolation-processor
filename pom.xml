@@ -61,16 +61,13 @@
   </licenses>
 
 
-  <inceptionYear>2024</inceptionYear>
-
-
-  <!-- TODO: Update issue management -->
+  <inceptionYear>2025</inceptionYear>
 
 
   <issueManagement>
 
 
-    <url>https://github.com/toolisticon/interpolation-processor/issues</url>
+    <url>https://github.com/pragmasoft-ua/interpolation-processor/issues</url>
 
 
     <system>GitHub Issues</system>
@@ -79,19 +76,16 @@
   </issueManagement>
 
 
-  <!-- TODO: Configure SCM -->
-
-
   <scm>
 
 
-    <connection>scm:git:git@github.com:toolisticon/interpolation-processor.git</connection>
+    <connection>scm:git:git@github.com:pragmasoft-ua/interpolation-processor.git</connection>
 
 
-    <developerConnection>scm:git:git@github.com:toolisticon/interpolation-processor.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:pragmasoft-ua/interpolation-processor.git</developerConnection>
 
 
-    <url>git@github.com:toolisticon/interpolation-processor.git</url>
+    <url>git@github.com:pragmasoft-ua/interpolation-processor.git</url>
 
 
     <tag>HEAD</tag>
@@ -118,13 +112,13 @@
     <!-- Java compiler settings -->
 
 
-    <java.version>1.8</java.version>
+    <java.version>21</java.version>
 
 
-    <java.compile.source.version>1.8</java.compile.source.version>
+    <java.compile.source.version>21</java.compile.source.version>
 
 
-    <java.compile.target.version>1.8</java.compile.target.version>
+    <java.compile.target.version>21</java.compile.target.version>
 
 
     <!-- project dependency versions -->
@@ -1563,7 +1557,7 @@
     <module>interpolation-processor-api</module>
 
 
-    <module>interpolation-processor-processor</module>
+    <module>interpolation-processor</module>
 
 
     <module>interpolation-processor-example</module>
