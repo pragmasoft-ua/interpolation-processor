@@ -25,7 +25,7 @@ Just add the interpolation-processor annotation processor dependency to your dep
     <!-- must be on provided scope since it is just needed at compile time -->
     <dependency>
         <groupId>pragmasoft</groupId>
-        <artifactId>interpolation-processor-processor</artifactId>
+        <artifactId>interpolation-processor</artifactId>
         <version>2025.11.1</version>
         <scope>provided</scope>
     </dependency>

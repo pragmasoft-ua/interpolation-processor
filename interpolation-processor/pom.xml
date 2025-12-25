@@ -102,9 +102,9 @@
 
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration combine.self="append">
+        <configuration>
           <verbose>true</verbose>
-          <annotationProcessorPaths>
+          <annotationProcessorPaths combine.self="append">
             <path>
               <groupId>io.toolisticon.spiap</groupId>
               <artifactId>spiap-processor</artifactId>
