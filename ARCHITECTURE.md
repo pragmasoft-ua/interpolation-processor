@@ -17,12 +17,14 @@ This project implements compile-time string interpolation for Java 17+ using ann
 ### What We Avoid
 
 **AST Manipulation (Lombok/Manifold Style):**
+
 - Heavily criticized for using internal compiler APIs
 - Fragile across Java versions
 - Requires deep compiler hooks
 - Maintenance burden
 
 **Inline Code Modification:**
+
 - Standard annotation processors cannot modify existing source code
 - Would require compiler plugins with version-specific implementations
 
@@ -43,15 +45,17 @@ import static interpolation.Interpolator.str;
 public class Example {
     public void greet(String name, int count) {
         // User writes valid Java - no custom syntax
-        String msg = str("Hello \\{name}, you have \\{count} items");
+        String msg = str("Hello \{name}, you have \{count} items");
     }
 }
 ```
 
 **Key points:**
-- `str("Hello \\{name}")` is **valid Java** - `\\{` is an escaped brace
-- `str()` is a `native static` placeholder method - replaced during compilation
-- Template variables use `\\{varName}` syntax
+
+- `str("Hello \{name}")` is **valid Java** - `\\{` is an escaped brace
+- `str()` is a `static` placeholder method - its calls are replaced during compilation. Its implementation throws `UnsupportedOperationException` explaining that annotation processor likely was not invoked to process this file and how to add annotation processor to the java compiler.
+- Template variables use `\{varName}` syntax.
+- Template variables can reference method's arguments, local variables, class fields. Initially will **not** support arbitrary java expressions like `myVar + 10`, dot property navigation like `myVar.a` or references to imported or fully qualified static variables, but the template string parser should support implementing these features at a later stages, so idea is to use ANTLR or JavaCC parser generator with some existing grammar, maybe JSTL (requires further research).
 
 ### Core Types
 
@@ -62,20 +66,20 @@ public class Example {
  */
 public record Interpolator(
     String[] fragments,      // Template split by variables: ["Hello ", ", you have ", " items"]
-    VarInfo[] varInfos      // Compile-time metadata (not used at runtime)
+    VarInfo[] varInfos      // Compile-time metadata records
 ) {
     /**
      * Placeholder method - replaced by annotation processor.
      * Never actually called at runtime.
      */
-    public static native String str(String template);
+    public static String str(String template) { throws new UnsupportedOperationException("⚠️Interpolator annotation processor is not properly installed!");}
 
     /**
      * Runtime interpolation method.
      * Combines fragments with provided values.
      */
     public String process(Object... values) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < fragments.length; i++) {
             sb.append(fragments[i]);
             if (i < values.length) {
@@ -91,11 +95,10 @@ public record Interpolator(
  */
 record VarInfo(
     String name,              // Variable name from template
-    int slot,                 // Local variable slot number
-    String typeDescriptor,    // JVM type descriptor
-    boolean isField,          // true if class field, false if local variable
-    String fieldOwner,        // For fields: owner class (internal name)
-    boolean isWide            // true for long/double (occupy 2 slots)
+    int slot,                 // Local variable slot number as in java bytecode
+    boolean isWide,            // true for long/double (occupy 2 slots)
+    String typeDescriptor,    // JVM type descriptor of the variable itself
+    String fieldOwner        // For fields: owner class (internal name), null for local variables
 ) {}
 ```
 
@@ -131,15 +134,16 @@ public class InterpolationProcessor extends AbstractProcessor {
 ```
 
 **What we collect:**
-1. Find all calls to `Interpolator.str("template")`
+
+1. Find all calls to `Interpolator.str("....")`
 2. Parse template string → extract fragments and variable names
 3. Resolve variables in scope → map to local variable slots or fields
 4. Determine variable types using AST type information
-5. Store metadata in instance variables
+5. Store metadata in the `List<CallSiteInfo> callSites` instance variable of the `InterpolationMethodProcessor` class. Call sites in the list will be naturally sorted by the className.
 
 #### Step 1.2: Variable Resolution
 
-For each variable in template `\\{varName}`:
+For each variable in template `\{varName}`:
 
 1. **Search scope** using `Trees.getScope(TreePath)`
 2. **Find VariableElement** for the name
@@ -150,11 +154,12 @@ For each variable in template `\\{varName}`:
    - Local variables follow (in declaration order)
    - `long` and `double` occupy 2 slots
 4. **Extract type descriptor** from TypeMirror
-5. **Handle fields:** Set `isField=true`, track owner class
+5. **Handle fields:** Set `fieldOwner`, track owner class
 
 #### Step 1.3: Error Reporting
 
 Use standard `Messager` API:
+
 ```java
 messager.printMessage(
     Diagnostic.Kind.ERROR,
@@ -202,6 +207,7 @@ For each class with interpolation calls:
    }
    ```
 4. **Replace each `str()` call:**
+
    ```java
    // Original bytecode:
    ldc "Hello \\{name}, you have \\{count} items"
@@ -300,6 +306,7 @@ public class Greeter {
 ## Benefits
 
 ### Performance
+
 - ✅ **Template parsed once** at compile-time, not every execution
 - ✅ **Cached in bytecode** as constant data
 - ✅ **Zero parsing overhead** at runtime
@@ -307,18 +314,21 @@ public class Greeter {
 - ✅ **Future optimization potential** (invokedynamic, etc.)
 
 ### Maintainability
+
 - ✅ **Standard APIs only** - JSR 269 + Classfile API
 - ✅ **No internal compiler dependencies**
 - ✅ **Forward compatible** with Java version updates
 - ✅ **Clear separation** between compile-time and runtime
 
 ### Developer Experience
+
 - ✅ **Valid Java syntax** - no custom syntax errors
 - ✅ **IDE support** - code compiles normally
 - ✅ **Compile-time errors** with precise source locations
 - ✅ **Type-safe** - variables validated at compile-time
 
 ### Design Quality
+
 - ✅ **Immutable data structures** using records
 - ✅ **Similar to JEP 430/465** design philosophy
 - ✅ **Clean architecture** - well-separated concerns
@@ -326,37 +336,45 @@ public class Greeter {
 ## Trade-offs
 
 ### Limitations
+
 - ⚠️ **Not inline syntax** - requires `str("template")` wrapper
 - ⚠️ **Java 17+ only** (using Classfile API backport)
 - ⚠️ **Compile-time dependency** - annotation processor must run
-- ⚠️ **Simple expressions only** (initially) - `\\{var}` not `\\{obj.method()}`
+- ⚠️ **Simple expressions only** (initially) - `\{var}` not `\{obj.method()}`
 
 ### Complexity
+
 - ⚠️ **Two-phase processing** - AST analysis + bytecode transformation
 - ⚠️ **Slot calculation** - must track variable locations precisely
 - ⚠️ **Scope analysis** - proper variable resolution required
 
 ### Memory
+
 - ⚠️ **Static array per class** - minimal overhead
 - ⚠️ **One-time initialization cost** - in `<clinit>`, negligible
 
 ## Future Enhancements
 
 ### Expression Support
+
 Support complex expressions beyond simple variables:
+
 ```java
-str("User: \\{user.getName()}")
-str("Sum: \\{a + b}")
-str("Formatted: \\{String.format("%d", value)}")
+str("User: \{user.getName()}")
+str("Sum: \{a + b}")
+str("Formatted: \{String.format("%d", value)}")
 ```
 
 Requires:
+
 - Expression AST parsing
 - Bytecode generation for expression evaluation
 - More complex but achievable
 
 ### Optimization: invokedynamic
+
 Replace `Object[]` varargs with `invokedynamic` for zero-allocation:
+
 ```java
 invokedynamic process(String,Object,int)String [
     BootstrapMethod: StringConcatFactory.makeConcat
@@ -364,12 +382,15 @@ invokedynamic process(String,Object,int)String [
 ```
 
 Benefits:
+
 - No Object[] allocation
 - Potentially inlined by JIT
 - Even better performance
 
 ### IDE Plugin
-Syntax highlighting for `\\{variables}` inside templates
+
+Syntax highlighting for `\{variables}` inside templates
+
 - IntelliJ IDEA plugin
 - VS Code extension
 - Show inline hints for variable types
@@ -385,7 +406,6 @@ Syntax highlighting for `\\{variables}` inside templates
 
 ## References
 
-- **JEP 430**: String Templates (Preview) - https://openjdk.org/jeps/430
 - **JEP 465**: String Templates (Third Preview) - https://openjdk.org/jeps/465
 - **JEP 457**: Class-File API (Preview) - https://openjdk.org/jeps/457
 - **JSR 269**: Pluggable Annotation Processing API

@@ -5,26 +5,31 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 1: Core API & Data Structures
 
 ### 1.1 Interpolator Record
-- [ ] Create `Interpolator` record in `interpolation-processor-api` module
+
+- [ ] Create `Interpolator` record in `interpolation-api` module
   - [ ] Add `String[] fragments` field
   - [ ] Add `VarInfo[] varInfos` field (compile-time metadata)
-  - [ ] Implement `static native String str(String template)` placeholder method
+  - [ ] Implement `static String str(String template)` placeholder method
   - [ ] Implement `String process(Object... values)` runtime method
   - [ ] Add proper javadoc comments
   - [ ] Write unit tests for `process()` method
 
 ### 1.2 Metadata Records
+
 - [ ] Create `VarInfo` record in processor module
+
   - [ ] Fields: `String name`, `int slot`, `String typeDescriptor`, `boolean isField`, `String fieldOwner`, `boolean isWide`
   - [ ] Add validation (e.g., slot >= 0)
   - [ ] Add javadoc
 
 - [ ] Create `InterpolatorMetadata` record
+
   - [ ] Fields: `String[] fragments`, `List<VarInfo> variables`
   - [ ] Add factory method for parsing templates
   - [ ] Add javadoc
 
 - [ ] Create `CallSiteInfo` record
+
   - [ ] Fields: `String className`, `String methodName`, `String methodDescriptor`, `int callSiteIndex`, `InterpolatorMetadata metadata`
   - [ ] Add javadoc
 
@@ -35,6 +40,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 2: Template Parsing
 
 ### 2.1 Template Parser
+
 - [ ] Create `TemplateParser` class
   - [ ] Implement parsing logic to extract `\\{varName}` patterns
   - [ ] Handle escape sequences properly (`\\\\`, `\\{`, `\\}`)
@@ -51,6 +57,7 @@ This document outlines all tasks required to complete the string interpolation a
     - [ ] Very long templates
 
 ### 2.2 Template Validation
+
 - [ ] Validate template syntax
   - [ ] Check for unmatched braces
   - [ ] Check for empty variable names `\\{}`
@@ -60,6 +67,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 3: AST Analysis
 
 ### 3.1 AST Scanner Setup
+
 - [ ] Update `InterpolationMethodProcessor` to scan for `Interpolator.str()` calls
   - [ ] Add `Trees trees` field
   - [ ] Add `Messager messager` field
@@ -68,6 +76,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Register `TaskListener` for `TaskEvent.Kind.ANALYZE` events
 
 ### 3.2 Method Invocation Detection
+
 - [ ] Create `TreePathScanner` to traverse AST
   - [ ] Override `visitMethodInvocation(MethodInvocationTree, Void)`
   - [ ] Implement `isInterpolatorStrCall()` helper
@@ -78,6 +87,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Handle non-constant template strings (report error)
 
 ### 3.3 Variable Resolution
+
 - [ ] Create `VariableResolver` class
   - [ ] Implement `resolveVariable(String varName, TreePath context)` method
   - [ ] Use `Trees.getScope(TreePath)` to get scope
@@ -87,6 +97,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Report error if variable not found
 
 ### 3.4 Slot Calculation
+
 - [ ] Create `SlotCalculator` class
   - [ ] Implement `calculateSlot(VariableElement var, MethodTree method)` method
   - [ ] Handle instance methods (`this` takes slot 0)
@@ -97,6 +108,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Write unit tests for various method signatures
 
 ### 3.5 Type Information
+
 - [ ] Create `TypeDescriptorBuilder` class
   - [ ] Convert `TypeMirror` to JVM type descriptor
   - [ ] Handle primitives: `int` → `I`, `boolean` → `Z`, etc.
@@ -106,6 +118,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Write unit tests for all type kinds
 
 ### 3.6 Field Handling
+
 - [ ] Support instance field references
   - [ ] Detect when variable is a field
   - [ ] Store field owner class (internal name)
@@ -114,6 +127,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Same as instance fields, track owner class
 
 ### 3.7 Error Reporting
+
 - [ ] Implement comprehensive error messages using `Messager`
   - [ ] Variable not found in scope
   - [ ] Template syntax errors
@@ -124,6 +138,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 4: Bytecode Transformation
 
 ### 4.1 Classfile API Integration
+
 - [ ] Add dependency on `jdk-classfile-backport`
 - [ ] Create `BytecodeTransformer` class
   - [ ] Implement `transformClass(String className, List<CallSiteInfo> callSites)` method
@@ -132,12 +147,14 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Write transformed bytecode back to .class file
 
 ### 4.2 Static Field Generation
+
 - [ ] Generate `private static final Interpolator[] INTERPOLATORS_$` field
   - [ ] Use `ClassBuilder.withField()`
   - [ ] Set correct access flags: `ACC_PRIVATE | ACC_STATIC | ACC_FINAL`
   - [ ] Set type descriptor: `[Linterpolation/Interpolator;`
 
 ### 4.3 Static Initializer Generation
+
 - [ ] Generate or modify `<clinit>` method
   - [ ] Create `new Interpolator[]` array
   - [ ] For each call site:
@@ -149,6 +166,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Handle case where `<clinit>` already exists (merge)
 
 ### 4.4 Method Call Replacement
+
 - [ ] Transform methods containing `str()` calls
   - [ ] Use `MethodBuilder.transformCode()`
   - [ ] Detect `invokestatic Interpolator.str(String)String` instructions
@@ -169,6 +187,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Remove original `ldc "template"` instruction
 
 ### 4.5 Instruction Helpers
+
 - [ ] Create helper methods for bytecode generation
   - [ ] `loadConstant(int)` - generate correct constant load instruction
   - [ ] `loadVariable(VarInfo)` - generate load instruction based on type and slot
@@ -176,11 +195,12 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] `loadField(VarInfo)` - generate field access instruction
 
 ### 4.6 Edge Cases
+
 - [ ] Handle multiple `str()` calls in same method
   - [ ] Track call site index correctly
   - [ ] Ensure each gets correct Interpolator from array
 - [ ] Handle nested method calls
-  - [ ] `str("outer \\{str("inner")}")`  - should this be allowed? (probably error)
+  - [ ] `str("outer \\{str("inner")}")` - should this be allowed? (probably error)
 - [ ] Handle `str()` in constructors
   - [ ] Account for uninitialized `this`
 - [ ] Handle `str()` in static initializers
@@ -189,6 +209,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 5: Integration & Testing
 
 ### 5.1 Processor Integration
+
 - [ ] Update `InterpolationMethodProcessor.process()` method
   - [ ] Call AST analysis in non-final rounds
   - [ ] Call bytecode transformation in `processingOver()` round
@@ -196,6 +217,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Skip transformation if compilation errors occurred
 
 ### 5.2 Unit Tests
+
 - [ ] Template parser tests (already outlined in 2.1)
 - [ ] Variable resolver tests
   - [ ] Local variables
@@ -211,6 +233,7 @@ This document outlines all tasks required to complete the string interpolation a
 - [ ] Type descriptor builder tests (already outlined in 3.5)
 
 ### 5.3 Integration Tests
+
 - [ ] Create test cases in `interpolation-processor-integrationTest`
   - [ ] Simple variable interpolation: `str("Hello \\{name}")`
   - [ ] Multiple variables: `str("\\{a} + \\{b} = \\{c}")`
@@ -232,6 +255,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Escaped braces `str("\\\\{ not a var }")`
 
 ### 5.4 Error Case Tests
+
 - [ ] Variable not found
 - [ ] Malformed template
 - [ ] Non-constant template string
@@ -239,6 +263,7 @@ This document outlines all tasks required to complete the string interpolation a
 - [ ] Unmatched braces
 
 ### 5.5 Example Project
+
 - [ ] Update `interpolation-processor-example` with real use cases
   - [ ] Simple greeting example
   - [ ] Logging with multiple variables
@@ -249,13 +274,16 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 6: Documentation
 
 ### 6.1 Code Documentation
+
 - [ ] Add comprehensive javadoc to all public APIs
 - [ ] Add package-info.java with overview
 - [ ] Document thread safety (immutable records are thread-safe)
 - [ ] Document performance characteristics
 
 ### 6.2 User Documentation
+
 - [ ] Create/update README.md
+
   - [ ] Quick start guide
   - [ ] Installation instructions (Maven/Gradle)
   - [ ] Basic usage examples
@@ -274,6 +302,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Build tool configuration
 
 ### 6.3 Developer Documentation
+
 - [ ] Update ARCHITECTURE.md if design changes
 - [ ] Create CONTRIBUTING.md
   - [ ] How to build the project
@@ -284,6 +313,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 7: Build & Release
 
 ### 7.1 Build Configuration
+
 - [ ] Configure Maven/Gradle build
   - [ ] Ensure annotation processor is properly registered
   - [ ] Configure compiler arguments if needed
@@ -291,12 +321,14 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Configure dependencies correctly
 
 ### 7.2 Testing Infrastructure
+
 - [ ] Set up CI/CD (GitHub Actions or similar)
   - [ ] Run tests on multiple Java versions (17, 21, 22+)
   - [ ] Run on multiple platforms (Linux, Windows, macOS)
   - [ ] Code coverage reporting
 
 ### 7.3 Release Preparation
+
 - [ ] Version numbering scheme
 - [ ] CHANGELOG.md
 - [ ] License verification (GPL v3 confirmed)
@@ -305,6 +337,7 @@ This document outlines all tasks required to complete the string interpolation a
 ## Phase 8: Future Enhancements (Optional)
 
 ### 8.1 Expression Support
+
 - [ ] Design expression syntax: `\\{user.getName()}`
 - [ ] Parse expression AST
 - [ ] Generate bytecode for expression evaluation
@@ -312,6 +345,7 @@ This document outlines all tasks required to complete the string interpolation a
 - [ ] Add comprehensive tests
 
 ### 8.2 Performance Optimizations
+
 - [ ] Investigate `invokedynamic` for concatenation
   - [ ] Use `StringConcatFactory.makeConcat()`
   - [ ] Eliminate Object[] allocation
@@ -323,6 +357,7 @@ This document outlines all tasks required to complete the string interpolation a
 - [ ] Optimize fragment storage (intern strings?)
 
 ### 8.3 IDE Plugin
+
 - [ ] IntelliJ IDEA plugin
   - [ ] Syntax highlighting for `\\{variables}`
   - [ ] Code completion inside templates
@@ -332,6 +367,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Similar features
 
 ### 8.4 Advanced Features
+
 - [ ] Format specifiers: `\\{value:%.2f}`
 - [ ] Null handling options
 - [ ] Custom interpolation strategies
@@ -340,15 +376,19 @@ This document outlines all tasks required to complete the string interpolation a
 ## Milestones
 
 ### Milestone 1: Core Implementation (Phases 1-4)
+
 Complete basic interpolation with simple variables.
 
 ### Milestone 2: Testing & Polish (Phase 5)
+
 All tests passing, integration verified.
 
 ### Milestone 3: Documentation & Release (Phases 6-7)
+
 Ready for public use.
 
 ### Milestone 4: Advanced Features (Phase 8)
+
 Optional enhancements based on user feedback.
 
 ## Notes

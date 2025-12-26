@@ -8,7 +8,7 @@
 
 Maven archetype used to generate the project:
 
-`mvn archetype:generate -DarchetypeGroupId="io.toolisticon.maven.archetypes" -DarchetypeArtifactId="annotationprocessor-archetype" -DarchetypeVersion="0.10.0" -DgroupId=pragmasoft -DartifactId=interpolation-processor -Dversion="2025.11.1" -Dpackage=interpolation -DannotationName=InterpolationMethod`
+`mvn archetype:generate -DarchetypeGroupId="io.toolisticon.maven.archetypes" -DarchetypeArtifactId="annotationprocessor-archetype" -DarchetypeVersion="0.10.0" -DgroupId=pragmasoft -DartifactId=interpolation-processor -Dversion="2025.12.1-SNAPSHOT" -Dpackage=interpolation -DannotationName=InterpolationMethod`
 
 # Why you should use this project?
 
@@ -26,7 +26,7 @@ Just add the interpolation-processor annotation processor dependency to your dep
     <dependency>
         <groupId>pragmasoft</groupId>
         <artifactId>interpolation-processor</artifactId>
-        <version>2025.11.1</version>
+        <version>2025.12.1-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>
 </dependencies>
