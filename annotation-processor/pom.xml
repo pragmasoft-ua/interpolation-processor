@@ -54,11 +54,11 @@
               dependencies.  -->
 
               <relocations>
-                <relocation>
+                <!-- <relocation>
                   <pattern>io.toolisticon.aptk</pattern>
                   <shadedPattern>interpolation._3rdparty.io.toolisticon.aptk
                   </shadedPattern>
-                </relocation>
+                </relocation> -->
               </relocations>
             </configuration>
           </execution>

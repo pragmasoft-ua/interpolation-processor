@@ -6,19 +6,19 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 1.1 Interpolator Record
 
-- [ ] Create `Interpolator` record in `interpolation-api` module
-  - [ ] Add `String[] fragments` field
-  - [ ] Add `VarInfo[] varInfos` field (compile-time metadata)
-  - [ ] Implement `static String str(String template)` placeholder method
-  - [ ] Implement `String process(Object... values)` runtime method
-  - [ ] Add proper javadoc comments
+- [x] Create `Interpolator` record in `interpolation-api` module
+  - [x] Add `String[] fragments` field
+  - [x] Add `VarInfo[] varInfos` field (compile-time metadata)
+  - [x] Implement `static String str(String template)` placeholder method
+  - [x] Implement `String process(Object... values)` runtime method
+  - [x] Add proper javadoc comments
   - [ ] Write unit tests for `process()` method
 
 ### 1.2 Metadata Records
 
-- [ ] Create `VarInfo` record in processor module
+- [x] Create `VarInfo` record in processor module
 
-  - [ ] Fields: `String name`, `int slot`, `String typeDescriptor`, `boolean isField`, `String fieldOwner`, `boolean isWide`
+  - [x] Fields: `String name`, `int slot`, `String typeDescriptor`, `String fieldOwner`, `boolean isWide`
   - [ ] Add validation (e.g., slot >= 0)
   - [ ] Add javadoc
 
@@ -68,7 +68,7 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 3.1 AST Scanner Setup
 
-- [ ] Update `InterpolationMethodProcessor` to scan for `Interpolator.str()` calls
+- [ ] Update `InterpolationProcessor` to scan for `Interpolator.str()` calls
   - [ ] Add `Trees trees` field
   - [ ] Add `Messager messager` field
   - [ ] Add `Map<String, ClassInterpolationData> collectedData` instance variable
@@ -397,5 +397,4 @@ Optional enhancements based on user feedback.
 - Write tests early and often
 - Keep immutable data structures throughout
 - Use Java records wherever appropriate
-- Follow existing APTK patterns in the codebase
 - Ensure all error messages are clear and actionable
