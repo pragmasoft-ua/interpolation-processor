@@ -1,28 +1,31 @@
 # interpolation-processor
 
-## Java annotation processor which (partially) implements JEP 465 style string interpolation
+Compile-time string interpolation for Java 17+ using annotation processing and bytecode transformation, providing a JEP 465-like developer experience without requiring language modifications.
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/${groupId}/${rootArtifactId}/badge.svg)](https://maven-badges.herokuapp.com/maven-central/${groupId}/${rootArtifactId})
-[![Build Status](https://travis-ci.org/toolisticon/${rootArtifactId}.svg?branch=master)](https://travis-ci.org/toolisticon/${rootArtifactId})
-[![codecov](https://codecov.io/gh/toolisticon/${rootArtifactId}/branch/master/graph/badge.svg)](https://codecov.io/gh/toolisticon/${rootArtifactId})
+## Features
 
-Maven archetype used to generate the project:
+- **Inline string interpolation syntax** similar to JEP 465 String Templates
+- **Compile-time template parsing** - templates are parsed once during compilation, not at runtime
+- **Standard APIs only** - uses JSR 269 Annotation Processing and Classfile API (backport)
+- **Zero runtime overhead** - optimized bytecode generation
+- **Valid Java syntax** - no custom syntax that breaks IDE support
 
-`mvn archetype:generate -DarchetypeGroupId="io.toolisticon.maven.archetypes" -DarchetypeArtifactId="annotationprocessor-archetype" -DarchetypeVersion="0.10.0" -DgroupId=pragmasoft -DartifactId=interpolation-processor -Dversion="2025.12.1-SNAPSHOT" -Dpackage=interpolation -DannotationName=InterpolationMethod`
+## Quick Start
 
-# Why you should use this project?
+### Maven Dependency
 
-# Features
+Add the annotation processor to your project:
 
-Annotation processor that (partially) implements JEP 465 style string interpolation
-
-# How does it work?
-
-Just add the interpolation-processor annotation processor dependency to your dependencies
-
-``` xml`
+```xml
 <dependencies>
-    <!-- must be on provided scope since it is just needed at compile time -->
+    <!-- Runtime API - required at compile and runtime -->
+    <dependency>
+        <groupId>pragmasoft</groupId>
+        <artifactId>interpolation-api</artifactId>
+        <version>2025.12.1-SNAPSHOT</version>
+    </dependency>
+
+    <!-- Annotation processor - only needed at compile time -->
     <dependency>
         <groupId>pragmasoft</groupId>
         <artifactId>interpolation-processor</artifactId>
@@ -30,33 +33,126 @@ Just add the interpolation-processor annotation processor dependency to your dep
         <scope>provided</scope>
     </dependency>
 </dependencies>
- ``
+```
 
-## Preconditions
+### Usage Example
 
-## Example
+```java
+import static interpolation.Interpolator.str;
 
-# Contributing
+public class Example {
+    public void greet(String name, int count) {
+        // Use \{varName} syntax for variable interpolation
+        String msg = str("Hello \{name}, you have \{count} items");
+        System.out.println(msg);
+    }
+}
+```
 
-We welcome any kind of suggestions and pull requests.
+The `str()` method is a placeholder that gets replaced during compilation with optimized bytecode that performs the string concatenation.
 
-## Building and developing the ${rootArtifactId} annotation processor
+## How It Works
 
-The ${rootArtifactId} is built using Maven.
-A simple import of the pom in your IDE should get you up and running. To build the ${rootArtifactId} on the commandline, just run `mvn` or `mvn clean install`
+1. **AST Analysis** - During compilation, the annotation processor scans for `str()` calls and extracts template strings
+2. **Template Parsing** - Templates are parsed to extract fragments and variable references
+3. **Variable Resolution** - Variables are resolved in scope to determine their types and slot numbers
+4. **Bytecode Transformation** - After compilation, the processor transforms `.class` files to replace `str()` calls with optimized concatenation code
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed design documentation.
+
+## Project Structure
+
+This is a multi-module Maven project:
+
+```
+interpolation-processor/
+├── interpolation-api/          # Runtime API (Interpolator, VarInfo records)
+├── annotation-processor/       # Annotation processor implementation
+├── integration-test/           # Integration tests and usage examples
+├── openspec/                   # Spec-driven development artifacts
+├── pom.xml                     # Parent POM
+└── mvnw, mvnw.cmd              # Maven wrapper
+```
+
+### Modules
+
+| Module | Artifact ID | Description |
+|--------|-------------|-------------|
+| `interpolation-api` | `interpolation-api` | Runtime API containing `Interpolator` and `VarInfo` records. Required as a compile and runtime dependency. |
+| `annotation-processor` | `interpolation-processor` | The annotation processor that performs AST analysis and bytecode transformation. Used as a `provided` scope dependency. |
+| `integration-test` | `interpolation-integration-test` | Integration tests demonstrating usage patterns. Not published. |
+
+## Building
+
+The project uses Maven Wrapper and requires Java 17+:
+
+```bash
+# Build and run tests (default goals: clean install)
+./mvnw
+
+# Or explicitly
+./mvnw clean install
+
+# Skip tests
+./mvnw clean install -DskipTests
+```
 
 ## Requirements
 
-The likelihood of a pull request being used rises with the following properties:
+- **Java**: 17 or higher
+- **Maven**: 3.6.3 or higher (wrapper included)
 
-- You have used a feature branch.
-- You have included a test that demonstrates the functionality added or fixed.
-- You adhered to the [code conventions](http://www.oracle.com/technetwork/java/javase/documentation/codeconvtoc-136057.html).
+## Template Syntax
 
-## Contributions
+| Syntax | Description |
+|--------|-------------|
+| `\{varName}` | Insert variable value |
+| `\\{` | Escaped brace (literal `{`) |
 
-# License
+### Supported Variable Types
 
-This project is released under the [GPL V3.0 License](LICENSE).
+- Method parameters
+- Local variables
+- Instance fields
+- Static fields
+- All primitive types (with automatic boxing)
+- Object types
+
+## Current Limitations
+
+- Simple variable references only (`\{var}`, not `\{obj.method()}`)
+- No format specifiers yet
+- Expression evaluation not supported (planned for future)
+
+## Development Status
+
+This project is under active development. See [TODO.md](TODO.md) for the implementation roadmap.
+
+## Contributing
+
+Contributions are welcome! Please see our guidelines:
+
+### Building and Developing
+
+1. Clone the repository
+2. Run `./mvnw clean install` to build
+3. Import as a Maven project in your IDE
+
+### Pull Request Guidelines
+
+- Use feature branches
+- Include tests for new functionality
+- Follow [Oracle Java Code Conventions](http://www.oracle.com/technetwork/java/javase/documentation/codeconvtoc-136057.html)
+
+## License
+
+This project is released under the [GNU General Public License v3.0](LICENSE).
 
 This project includes and repackages the [Annotation-Processor-Toolkit](https://github.com/holisticon/annotation-processor-toolkit) released under the [MIT License](/3rdPartyLicenses/annotation-processor-toolkit/LICENSE.txt).
+
+## References
+
+- [JEP 465: String Templates (Third Preview)](https://openjdk.org/jeps/465)
+- [JEP 457: Class-File API (Preview)](https://openjdk.org/jeps/457)
+- [JSR 269: Pluggable Annotation Processing API](https://jcp.org/en/jsr/detail?id=269)
+- [Classfile API Backport](https://github.com/dmlloyd/jdk-classfile-backport)
