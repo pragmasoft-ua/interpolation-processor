@@ -35,7 +35,7 @@ jobs:
       - name: Generate JaCoCo badge
         uses: cicirello/jacoco-badge-generator@v2
         with:
-          jacoco-csv-file: target/site/jacoco-aggregate/jacoco.csv
+          jacoco-csv-file: annotation-processor/target/site/jacoco-aggregate/jacoco.csv
           badges-directory: .github/badges
           generate-branches-badge: true
 
@@ -51,7 +51,7 @@ jobs:
       - name: Upload coverage report to Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: target/site/jacoco-aggregate
+          path: annotation-processor/target/site/jacoco-aggregate
 
   deploy:
     needs: build

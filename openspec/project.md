@@ -119,9 +119,16 @@ interpolation-api  <--  annotation-processor  <--  integration-test
 
 ### Branching Strategy
 
-- `main` - Primary development branch
+- `main` - Production branch (protected)
+- `develop` - Primary development branch
 - Feature branches for new work
 - Pull requests for code review
+
+### Branch Rules
+
+- **Never commit directly to `main`** - All changes must go through `develop` first
+- Always commit to `develop` branch, then merge to `main` when ready for release
+- Use feature branches off `develop` for larger changes
 
 ### Commit Conventions
 
