@@ -42,8 +42,8 @@ import static interpolation.Interpolator.str;
 
 public class Example {
     public void greet(String name, int count) {
-        // Use \{varName} syntax for variable interpolation
-        String msg = str("Hello \{name}, you have \{count} items");
+        // Use ${varName} syntax for variable interpolation
+        String msg = str("Hello ${name}, you have ${count} items");
         System.out.println(msg);
     }
 }
@@ -76,11 +76,11 @@ interpolation-processor/
 
 ### Modules
 
-| Module | Artifact ID | Description |
-|--------|-------------|-------------|
-| `interpolation-api` | `interpolation-api` | Runtime API containing `Interpolator` and `VarInfo` records. Required as a compile and runtime dependency. |
-| `annotation-processor` | `interpolation-processor` | The annotation processor that performs AST analysis and bytecode transformation. Used as a `provided` scope dependency. |
-| `integration-test` | `interpolation-integration-test` | Integration tests demonstrating usage patterns. Not published. |
+| Module                 | Artifact ID                      | Description                                                                                                             |
+| ---------------------- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `interpolation-api`    | `interpolation-api`              | Runtime API containing `Interpolator` and `VarInfo` records. Required as a compile and runtime dependency.              |
+| `annotation-processor` | `interpolation-processor`        | The annotation processor that performs AST analysis and bytecode transformation. Used as a `provided` scope dependency. |
+| `integration-test`     | `interpolation-integration-test` | Integration tests demonstrating usage patterns. Not published.                                                          |
 
 ## Building
 
@@ -100,14 +100,15 @@ The project uses Maven Wrapper and requires Java 17+:
 ## Requirements
 
 - **Java**: 17 or higher
-- **Maven**: 3.6.3 or higher (wrapper included)
+- **Maven**: 3.9.12 or higher (wrapper included)
 
 ## Template Syntax
 
-| Syntax | Description |
-|--------|-------------|
-| `\{varName}` | Insert variable value |
-| `\\{` | Escaped brace (literal `{`) |
+| Syntax       | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `${varName}` | Insert variable value                                          |
+| `$${`        | Escaped dollar-brace (literal `${`)                            |
+| `$`          | Single dollar sign (no escaping needed unless followed by `{`) |
 
 ### Supported Variable Types
 
@@ -120,7 +121,7 @@ The project uses Maven Wrapper and requires Java 17+:
 
 ## Current Limitations
 
-- Simple variable references only (`\{var}`, not `\{obj.method()}`)
+- Simple variable references only (`${var}`, not `${obj.method()}`)
 - No format specifiers yet
 - Expression evaluation not supported (planned for future)
 

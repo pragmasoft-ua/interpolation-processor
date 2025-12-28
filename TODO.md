@@ -41,28 +41,28 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 2.1 Template Parser
 
-- [ ] Create `TemplateParser` class
-  - [ ] Implement parsing logic to extract `\\{varName}` patterns
-  - [ ] Handle escape sequences properly (`\\\\`, `\\{`, `\\}`)
-  - [ ] Split template into fragments array
-  - [ ] Extract variable names list
-  - [ ] Add comprehensive error handling for malformed templates
-  - [ ] Write unit tests with edge cases:
-    - [ ] Empty template
-    - [ ] No variables
-    - [ ] Multiple variables
-    - [ ] Adjacent variables: `\\{a}\\{b}`
-    - [ ] Escaped braces: `\\\\{notavar}`
-    - [ ] Unicode characters
-    - [ ] Very long templates
+- [x] Create `TemplateParserWrapper` class using ANTLR-generated parser
+  - [x] Implement parsing logic to extract `${varName}` patterns
+  - [x] Handle escape sequences properly (`$$` for literal `$`)
+  - [x] Split template into fragments array
+  - [x] Extract variable names list
+  - [x] Add comprehensive error handling for malformed templates
+  - [x] Write unit tests with edge cases:
+    - [x] Empty template
+    - [x] No variables
+    - [x] Multiple variables
+    - [x] Adjacent variables: `${a}${b}`
+    - [x] Escaped dollar-brace: `$${notavar}`
+    - [x] Unicode characters
+    - [x] Various edge cases
 
 ### 2.2 Template Validation
 
-- [ ] Validate template syntax
-  - [ ] Check for unmatched braces
-  - [ ] Check for empty variable names `\\{}`
-  - [ ] Check for invalid variable name characters
-  - [ ] Report clear error messages with position info
+- [x] Validate template syntax (via ANTLR grammar)
+  - [x] Check for unclosed expressions
+  - [x] Check for empty variable names `${}`
+  - [x] Check for invalid variable name characters
+  - [x] Report clear error messages with position info
 
 ## Phase 3: AST Analysis
 
@@ -200,7 +200,7 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Track call site index correctly
   - [ ] Ensure each gets correct Interpolator from array
 - [ ] Handle nested method calls
-  - [ ] `str("outer \\{str("inner")}")` - should this be allowed? (probably error)
+  - [ ] `str("outer ${str("inner")}")` - should this be allowed? (probably error)
 - [ ] Handle `str()` in constructors
   - [ ] Account for uninitialized `this`
 - [ ] Handle `str()` in static initializers
@@ -235,8 +235,8 @@ This document outlines all tasks required to complete the string interpolation a
 ### 5.3 Integration Tests
 
 - [ ] Create test cases in `interpolation-processor-integrationTest`
-  - [ ] Simple variable interpolation: `str("Hello \\{name}")`
-  - [ ] Multiple variables: `str("\\{a} + \\{b} = \\{c}")`
+  - [ ] Simple variable interpolation: `str("Hello ${name}")`
+  - [ ] Multiple variables: `str("${a} + ${b} = ${c}")`
   - [ ] All primitive types: `int`, `long`, `double`, `boolean`, etc.
   - [ ] Object types: `String`, custom classes
   - [ ] Instance fields
@@ -249,18 +249,18 @@ This document outlines all tasks required to complete the string interpolation a
   - [ ] Inner classes
   - [ ] Edge case: Empty string `str("")`
   - [ ] Edge case: No variables `str("literal")`
-  - [ ] Edge case: Only variable `str("\\{x}")`
-  - [ ] Edge case: Adjacent variables `str("\\{a}\\{b}")`
+  - [ ] Edge case: Only variable `str("${x}")`
+  - [ ] Edge case: Adjacent variables `str("${a}${b}")`
   - [ ] Unicode in template
-  - [ ] Escaped braces `str("\\\\{ not a var }")`
+  - [ ] Escaped dollar-brace `str("$${not a var}")`
 
 ### 5.4 Error Case Tests
 
 - [ ] Variable not found
 - [ ] Malformed template
 - [ ] Non-constant template string
-- [ ] Empty variable name `\\{}`
-- [ ] Unmatched braces
+- [ ] Empty variable name `${}`
+- [ ] Unclosed expression `${name`
 
 ### 5.5 Example Project
 
@@ -338,7 +338,7 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 8.1 Expression Support
 
-- [ ] Design expression syntax: `\\{user.getName()}`
+- [ ] Design expression syntax: `${user.getName()}`
 - [ ] Parse expression AST
 - [ ] Generate bytecode for expression evaluation
 - [ ] Handle method calls, field access, operators
@@ -359,7 +359,7 @@ This document outlines all tasks required to complete the string interpolation a
 ### 8.3 IDE Plugin
 
 - [ ] IntelliJ IDEA plugin
-  - [ ] Syntax highlighting for `\\{variables}`
+  - [ ] Syntax highlighting for `${variables}`
   - [ ] Code completion inside templates
   - [ ] Error highlighting
   - [ ] Quick fixes
@@ -368,7 +368,7 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 8.4 Advanced Features
 
-- [ ] Format specifiers: `\\{value:%.2f}`
+- [ ] Format specifiers: `${value:%.2f}`
 - [ ] Null handling options
 - [ ] Custom interpolation strategies
 - [ ] Multiline templates with indentation handling

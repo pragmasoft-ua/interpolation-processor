@@ -2,12 +2,12 @@
 
 ## Purpose
 
-Compile-time string interpolation for Java, providing a JEP 465-like developer experience using annotation processing and bytecode transformation. The goal is to enable syntax like `str("Hello \{name}")` that gets transformed into optimized bytecode during compilation.
+Compile-time string interpolation for Java, providing a JEP 465-like developer experience using annotation processing and bytecode transformation. The goal is to enable syntax like `str("Hello ${name}")` that gets transformed into optimized bytecode during compilation.
 
 ### Key Goals
 
-1. Provide inline string interpolation syntax similar to JEP 465 String Templates
-2. Parse templates at compile-time, not runtime (zero parsing overhead)
+1. Provide inline string interpolation syntax similar to JEP 465 String Templates using `${var}` syntax
+2. Parse templates at compile-time using ANTLR, not runtime (zero parsing overhead)
 3. Use only standard and stable APIs (JSR 269, Classfile API)
 4. Support Java 17+ using the Classfile API backport
 5. Achieve zero runtime performance overhead through optimized bytecode generation
@@ -18,6 +18,7 @@ Compile-time string interpolation for Java, providing a JEP 465-like developer e
 - **Maven** - Multi-module build with Maven Wrapper
 - **JSR 269** - Standard Annotation Processing API
 - **Classfile API** - Official bytecode transformation (via backport for Java 17-22)
+- **ANTLR 4** - Parser generator for template syntax parsing
 - **JUnit 4** - Unit testing
 - **Hamcrest** - Test assertions
 - **Mockito** - Test mocking
@@ -65,7 +66,7 @@ interpolation-api  <--  annotation-processor  <--  integration-test
 - Packages: `interpolation`, `interpolation.processor`
 - Classes: PascalCase (e.g., `InterpolationProcessor`, `VarInfo`)
 - Methods: camelCase (e.g., `str()`, `process()`)
-- Constants: UPPER_SNAKE_CASE (e.g., `INTERPOLATORS_$`)
+- Constants: UPPER_SNAKE_CASE (e.g., `INTERPOLATORS`)
 - Generated fields: suffix with `_$` to avoid conflicts
 
 ### Architecture Patterns
@@ -146,8 +147,9 @@ interpolation-api  <--  annotation-processor  <--  integration-test
 
 ### Template Syntax
 
-- `\{varName}` - Variable interpolation
-- `\\{` - Escaped brace (literal)
+- `${varName}` - Variable interpolation (industry standard: Spring, Velocity, shell)
+- `$${` - Escaped dollar-brace (literal `${` in output)
+- `$` - Single dollar sign (no escaping needed unless followed by `{`)
 - Variables resolved from: parameters, locals, instance fields, static fields
 
 ## Important Constraints
@@ -161,13 +163,13 @@ interpolation-api  <--  annotation-processor  <--  integration-test
 
 ### Design Constraints
 
-- Only simple variable references initially (no expressions like `\{a + b}`)
-- No property navigation (no `\{obj.field}`)
+- Only simple variable references initially (no expressions like `${a + b}`)
+- No property navigation (no `${obj.field}`)
 - Template string must be a compile-time constant
 
 ### Build Constraints
 
-- Maven 3.6.3+ required
+- Maven 3.9.12+ required
 - enforcer plugin validates dependencies (no transitive runtime deps)
 - integration-test module not published (skip deploy/install)
 

@@ -76,13 +76,13 @@ The template parser SHALL report clear error messages with position information 
 - **WHEN** a template contains `Hello ${123invalid}`
 - **THEN** the parser reports an error indicating invalid identifier
 
-### Requirement: ANTLR-Based Parser Implementation
+### Requirement: Robust Parsing
 
-The template parser SHALL be implemented using ANTLR with lexer modes to handle both template structure and expression parsing in a single pass.
+The template parser SHALL correctly parse nested constructs and provide accurate error positions.
 
-#### Scenario: Nested braces in future expressions
-- **WHEN** a future template contains `${map.get("}")}`
-- **THEN** the parser correctly identifies the expression boundaries despite the `}` inside the string literal
+#### Scenario: Accurate error positions
+- **WHEN** a template contains a syntax error
+- **THEN** the parser reports the line and column of the error
 
 #### Scenario: Parser extensibility
 - **WHEN** the grammar is extended to support expressions like `${a + b}`

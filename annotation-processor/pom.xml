@@ -23,6 +23,12 @@
       <artifactId>interpolation-api</artifactId>
     </dependency>
 
+    <!-- ANTLR 4 runtime for template parsing -->
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+    </dependency>
+
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.google.testing.compile</groupId>
@@ -34,6 +40,23 @@
 
   <build>
     <plugins>
+
+      <!-- ANTLR 4 plugin for grammar compilation -->
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <listener>false</listener>
+          <visitor>true</visitor>
+        </configuration>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -53,12 +76,16 @@
                 - to prevent a version conflict of your annotation processors dependencies and the applications
               dependencies.  -->
 
+              <artifactSet>
+                <includes>
+                  <include>org.antlr:antlr4-runtime</include>
+                </includes>
+              </artifactSet>
               <relocations>
-                <!-- <relocation>
-                  <pattern>io.toolisticon.aptk</pattern>
-                  <shadedPattern>interpolation._3rdparty.io.toolisticon.aptk
-                  </shadedPattern>
-                </relocation> -->
+                <relocation>
+                  <pattern>org.antlr.v4.runtime</pattern>
+                  <shadedPattern>interpolation._3rdparty.org.antlr.v4.runtime</shadedPattern>
+                </relocation>
               </relocations>
             </configuration>
           </execution>

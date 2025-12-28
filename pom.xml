@@ -50,6 +50,7 @@
     <java.compile.source.version>25</java.compile.source.version>
     <java.compile.target.version>25</java.compile.target.version>
     <!-- project dependency versions -->
+    <antlr4.version>4.13.2</antlr4.version>
     <compile-testing.version>0.23.0</compile-testing.version>
     <!-- versions of test dependencies -->
     <junit.version>4.13.2</junit.version>
@@ -80,6 +81,7 @@
     <maven-site-plugin.version>3.12.1</maven-site-plugin.version>
     <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
     <maven-versions-plugin.version>2.20.1</maven-versions-plugin.version>
+    <antlr4-maven-plugin.version>4.13.2</antlr4-maven-plugin.version>
   </properties>
   <build>
     <defaultGoal>clean install</defaultGoal>
@@ -236,6 +238,12 @@
           <artifactId>versions-maven-plugin</artifactId>
           <version>${maven-versions-plugin.version}</version>
         </plugin>
+        <!-- ANTLR 4 plugin for grammar compilation -->
+        <plugin>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-maven-plugin</artifactId>
+          <version>${antlr4-maven-plugin.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
@@ -259,7 +267,7 @@
             <configuration>
               <rules>
                 <requireMavenVersion>
-                  <version>[3.6.3,)</version>
+                  <version>[3.9.12,)</version>
                 </requireMavenVersion>
                 <requireJavaVersion>
                   <version>${java.compile.source.version}</version>
@@ -477,6 +485,13 @@
         <artifactId>compile-testing</artifactId>
         <version>${compile-testing.version}</version>
         <scope>test</scope>
+      </dependency>
+      <!-- ANTLR 4 runtime for template parsing (shaded into processor jar) -->
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-runtime</artifactId>
+        <version>${antlr4.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

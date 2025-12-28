@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw compile:*)",
+      "Bash(./mvnw test:*)",
+      "Bash(java:*)",
+      "Bash(./mvnw clean install:*)",
+      "Bash(./mvnw clean compile:*)",
+      "Bash(./mvnw clean test:*)"
+    ]
+  }
+}

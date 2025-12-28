@@ -45,17 +45,18 @@ import static interpolation.Interpolator.str;
 public class Example {
     public void greet(String name, int count) {
         // User writes valid Java - no custom syntax
-        String msg = str("Hello \{name}, you have \{count} items");
+        String msg = str("Hello ${name}, you have ${count} items");
     }
 }
 ```
 
 **Key points:**
 
-- `str("Hello \{name}")` is **valid Java** - `\\{` is an escaped brace
+- `str("Hello ${name}")` is **valid Java** - the `${}` syntax requires no escaping
 - `str()` is a `static` placeholder method - its calls are replaced during compilation. Its implementation throws `UnsupportedOperationException` explaining that annotation processor likely was not invoked to process this file and how to add annotation processor to the java compiler.
-- Template variables use `\{varName}` syntax.
-- Template variables can reference method's arguments, local variables, class fields. Initially will **not** support arbitrary java expressions like `myVar + 10`, dot property navigation like `myVar.a` or references to imported or fully qualified static variables, but the template string parser should support implementing these features at a later stages, so idea is to use ANTLR or JavaCC parser generator with some existing grammar, maybe JSTL (requires further research).
+- Template variables use `${varName}` syntax (industry standard: Spring, Velocity, shell).
+- To include literal `${` in output, use `$${` escape sequence.
+- Template variables can reference method's arguments, local variables, class fields. Initially will **not** support arbitrary java expressions like `myVar + 10`, dot property navigation like `myVar.a` or references to imported or fully qualified static variables. The ANTLR-based template parser is designed to support implementing these features in future phases.
 
 ### Core Types
 
@@ -143,7 +144,7 @@ public class InterpolationProcessor extends AbstractProcessor {
 
 #### Step 1.2: Variable Resolution
 
-For each variable in template `\{varName}`:
+For each variable in template `${varName}`:
 
 1. **Search scope** using `Trees.getScope(TreePath)`
 2. **Find VariableElement** for the name
@@ -210,7 +211,7 @@ For each class with interpolation calls:
 
    ```java
    // Original bytecode:
-   ldc "Hello \\{name}, you have \\{count} items"
+   ldc "Hello ${name}, you have ${count} items"
    invokestatic Interpolator.str(String)String
 
    // Transformed bytecode:
@@ -267,7 +268,7 @@ package com.example;
 
 public class Greeter {
     public String greet(String name, int messageCount) {
-        String msg = Interpolator.str("Hello \\{name}, you have \\{messageCount} messages");
+        String msg = Interpolator.str("Hello ${name}, you have ${messageCount} messages");
         return msg;
     }
 }
@@ -340,7 +341,7 @@ public class Greeter {
 - ⚠️ **Not inline syntax** - requires `str("template")` wrapper
 - ⚠️ **Java 17+ only** (using Classfile API backport)
 - ⚠️ **Compile-time dependency** - annotation processor must run
-- ⚠️ **Simple expressions only** (initially) - `\{var}` not `\{obj.method()}`
+- ⚠️ **Simple expressions only** (initially) - `${var}` not `${obj.method()}`
 
 ### Complexity
 
@@ -360,9 +361,9 @@ public class Greeter {
 Support complex expressions beyond simple variables:
 
 ```java
-str("User: \{user.getName()}")
-str("Sum: \{a + b}")
-str("Formatted: \{String.format("%d", value)}")
+str("User: ${user.getName()}")
+str("Sum: ${a + b}")
+str("Formatted: ${String.format("%d", value)}")
 ```
 
 Requires:
@@ -389,7 +390,7 @@ Benefits:
 
 ### IDE Plugin
 
-Syntax highlighting for `\{variables}` inside templates
+Syntax highlighting for `${variables}` inside templates
 
 - IntelliJ IDEA plugin
 - VS Code extension
