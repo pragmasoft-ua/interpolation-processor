@@ -16,24 +16,24 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 1.2 Metadata Records
 
-- [x] Create `VarInfo` record in processor module
+- [ ] Move `VarInfo` record in processor module, remove it from `Interpolator` as it is unused there
 
   - [x] Fields: `String name`, `int slot`, `String typeDescriptor`, `String fieldOwner`, `boolean isWide`
   - [ ] Add validation (e.g., slot >= 0)
   - [ ] Add javadoc
 
-- [ ] Create `InterpolatorMetadata` record
+- [ ] Create `InterpolatorMetadata` record in processor module
 
   - [ ] Fields: `String[] fragments`, `List<VarInfo> variables`
   - [ ] Add factory method for parsing templates
   - [ ] Add javadoc
 
-- [ ] Create `CallSiteInfo` record
+- [ ] Create `CallSiteInfo` record in processor module
 
   - [ ] Fields: `String className`, `String methodName`, `String methodDescriptor`, `int callSiteIndex`, `InterpolatorMetadata metadata`
   - [ ] Add javadoc
 
-- [ ] Create `ClassInterpolationData` record
+- [ ] Create `ClassInterpolationData` record in processor module
   - [ ] Fields: `String className`, `List<CallSiteInfo> callSites`
   - [ ] Add javadoc
 
