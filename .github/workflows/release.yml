@@ -1,4 +1,4 @@
-name: release_on_main
+name: release
 
 # disabled until configured properly
 on:
@@ -41,3 +41,4 @@ jobs:
         env:
           OSS_CENTRAL_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           OSS_CENTRAL_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+
