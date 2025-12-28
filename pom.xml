@@ -70,7 +70,7 @@
     <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
     <maven-help-plugin.version>3.5.1</maven-help-plugin.version>
     <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-    <maven-jacoco-plugin.version>0.8.11</maven-jacoco-plugin.version>
+    <maven-jacoco-plugin.version>0.8.14</maven-jacoco-plugin.version>
     <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
     <maven-processor-plugin.version>2.2.4</maven-processor-plugin.version>
