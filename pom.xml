@@ -256,6 +256,12 @@
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
       </plugin>
+      <!-- We ban dependencies here except whitelisted ones to avoid them 
+       accidentally being added to the annotation processor jar. If 
+       annotation processor depends on some library, it should be shaded
+       into the processor jar using maven-shade-plugin. Unban those dependencies
+       which are needed in the final processor jar.
+       -->
       <plugin>
         <artifactId>maven-enforcer-plugin</artifactId>
         <executions>
@@ -279,6 +285,7 @@
                   </excludes>
                   <includes>
                     <include>pragmasoft:*</include>
+                    <include>org.antlr:antlr4-runtime</include>
                     <include>*:*:*:*:test:*</include>
                     <include>*:*:*:*:provided:*</include>
                   </includes>
@@ -473,12 +480,6 @@
         <version>${project.version}</version>
       </dependency>
       <!-- Compile only dependencies - for example needed by annotation processors -->
-      <dependency>
-        <groupId>io.toolisticon.spiap</groupId>
-        <artifactId>spiap-api</artifactId>
-        <version>${spiap.version}</version>
-        <scope>provided</scope>
-      </dependency>
       <!-- Test dependencies -->
       <dependency>
         <groupId>com.google.testing.compile</groupId>
@@ -491,7 +492,6 @@
         <groupId>org.antlr</groupId>
         <artifactId>antlr4-runtime</artifactId>
         <version>${antlr4.version}</version>
-        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

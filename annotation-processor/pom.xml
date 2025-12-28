@@ -75,12 +75,6 @@
                 - because the annotation processor should always be linked as provided dependency when it is used.
                 - to prevent a version conflict of your annotation processors dependencies and the applications
               dependencies.  -->
-
-              <artifactSet>
-                <includes>
-                  <include>org.antlr:antlr4-runtime</include>
-                </includes>
-              </artifactSet>
               <relocations>
                 <relocation>
                   <pattern>org.antlr.v4.runtime</pattern>
@@ -91,13 +85,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <verbose>true</verbose>
-        </configuration>
-      </plugin>
-
     </plugins>
   </build>
 </project>
