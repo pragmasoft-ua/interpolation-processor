@@ -3,8 +3,12 @@ name: jacoco
 on:
   push:
     branches:
-      - "*"
-      - "**/*"
+      - main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -24,5 +28,38 @@ jobs:
       - name: Prepare mvnw
         run: chmod +x ./mvnw
 
-      - name: Build
+      - name: Build and generate coverage
         run: ./mvnw verify jacoco:report-aggregate -B -q
+
+      - name: Generate JaCoCo badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: target/site/jacoco-aggregate/jacoco.csv
+          badges-directory: .github/badges
+          generate-branches-badge: true
+
+      - name: Commit badge
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "update coverage badge"
+          file_pattern: '.github/badges/*.svg'
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload coverage report to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: target/site/jacoco-aggregate
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

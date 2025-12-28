@@ -1,6 +1,7 @@
 # interpolation-processor
 
 [![Build Status](https://github.com/pragmasoft-ua/interpolation-processor/actions/workflows/default.yml/badge.svg)](https://github.com/pragmasoft-ua/interpolation-processor/actions/workflows/default.yml)
+[![Coverage](https://github.com/pragmasoft-ua/interpolation-processor/raw/main/.github/badges/jacoco.svg)](https://pragmasoft-ua.github.io/interpolation-processor/)
 
 Compile-time string interpolation for Java 17+ using annotation processing and bytecode transformation, providing a JEP 465-like developer experience without requiring language modifications.
 
