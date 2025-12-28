@@ -135,8 +135,7 @@ interpolation-api  <--  annotation-processor  <--  integration-test
 
 - **Round-based processing**: Processors run in multiple rounds
 - **processingOver()**: Final round for bytecode transformation
-- **Messager**: Error reporting with source location
-- **Trees API**: Access to AST for analysis
+- **Trees API**: Access to AST for analysis. Use `Trees.printMessage()` for diagnostic and error reporting with source location
 
 ### Bytecode Concepts
 

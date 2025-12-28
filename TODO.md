@@ -70,7 +70,6 @@ This document outlines all tasks required to complete the string interpolation a
 
 - [ ] Update `InterpolationProcessor` to scan for `Interpolator.str()` calls
   - [ ] Add `Trees trees` field
-  - [ ] Add `Messager messager` field
   - [ ] Add `Map<String, ClassInterpolationData> collectedData` instance variable
   - [ ] Implement `init()` method with `JavacTask` listener
   - [ ] Register `TaskListener` for `TaskEvent.Kind.ANALYZE` events
@@ -128,7 +127,7 @@ This document outlines all tasks required to complete the string interpolation a
 
 ### 3.7 Error Reporting
 
-- [ ] Implement comprehensive error messages using `Messager`
+- [ ] Implement comprehensive error messages using `Trees.printMessage()` for diagnostic and error reporting with source location
   - [ ] Variable not found in scope
   - [ ] Template syntax errors
   - [ ] Non-constant template string

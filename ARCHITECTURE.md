@@ -118,7 +118,6 @@ public class InterpolationProcessor extends AbstractProcessor {
     @Override
     public void init(ProcessingEnvironment env) {
         Trees trees = Trees.instance(env);
-        Messager messager = env.getMessager();
         JavacTask task = JavacTask.instance(env);
 
         // Register listener to analyze AST
@@ -159,10 +158,10 @@ For each variable in template `${varName}`:
 
 #### Step 1.3: Error Reporting
 
-Use standard `Messager` API:
+Use `Trees.printMessage()` for diagnostic and error reporting with source location
 
 ```java
-messager.printMessage(
+trees.printMessage(
     Diagnostic.Kind.ERROR,
     "Variable 'unknownVar' not found in scope",
     element  // Points to exact source location
